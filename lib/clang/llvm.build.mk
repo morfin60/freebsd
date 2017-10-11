@@ -12,19 +12,18 @@
 
 CFLAGS+=	-I${SRCTOP}/lib/clang/include
 CFLAGS+=	-I${LLVM_SRCS}/include
-CFLAGS+=	-DLLVM_ON_UNIX
-CFLAGS+=	-DLLVM_ON_FREEBSD
+CFLAGS+=	-DLLVM_BUILD_GLOBAL_ISEL
 CFLAGS+=	-D__STDC_LIMIT_MACROS
 CFLAGS+=	-D__STDC_CONSTANT_MACROS
-CFLAGS+=	-DNDEBUG
+#CFLAGS+=	-DNDEBUG
 
 TARGET_ARCH?=	${MACHINE_ARCH}
 BUILD_ARCH?=	${MACHINE_ARCH}
 
-# Armv6 uses hard float abi, unless the CPUTYPE has soft in it.
+# Armv6 and armv7 uses hard float abi, unless the CPUTYPE has soft in it.
 # arm (for armv4 and armv5 CPUs) always uses the soft float ABI.
 # For all other targets, we stick with 'unknown'.
-.if ${TARGET_ARCH:Marmv6*} && (!defined(CPUTYPE) || ${CPUTYPE:M*soft*} == "")
+.if ${TARGET_ARCH:Marmv[67]*} && (!defined(CPUTYPE) || ${CPUTYPE:M*soft*} == "")
 TARGET_ABI=	-gnueabihf
 .elif ${TARGET_ARCH:Marm*}
 TARGET_ABI=	-gnueabi
